@@ -33,7 +33,7 @@ function registrarMascota() {
     alert(`Mascota registrada: ${nombre}, ${especie}, ${edad} años.`);
     console.log(`Mascota registrada: ${nombre}, ${especie}, ${edad} años.`);
   } else {
-    alert("Registro cancelado.");
+    alert("Registro cancelado."); // Si el usuario cancela
     console.log("Registro de mascota cancelado.");
   }
 }
@@ -61,12 +61,14 @@ function elegirServicio() {
 
   if (opcion >= 1 && opcion <= servicios.length) {
     let mascotaNombre = prompt("Ingrese el nombre de la mascota:");
+    // Verificamos que el array no esté vacío antes de buscar
     if (mascotas.length === 0) {
       console.log(
         "No hay mascotas registradas. Registre una antes de elegir un servicio."
       );
       return;
     }
+    // Buscamos la mascota en el array, asegurando que mascotaNombre no sea null ni vacío
     if (mascotaNombre) {
       let mascota = mascotas.find(
         (m) =>
