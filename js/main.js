@@ -21,14 +21,21 @@ function registrarMascota() {
   let especie = prompt("Ingrese la especie de la mascota (perro, gato, etc.):");
   let edad = parseInt(prompt("Ingrese la edad de la mascota:"));
 
-  let nuevaMascota = {
-    nombre: nombre,
-    especie: especie,
-    edad: edad,
-  };
+  let continuar = confirm("Seguro de registrar esta mascota?");
+  if (continuar) {
+    let nuevaMascota = {
+      nombre: nombre,
+      especie: especie,
+      edad: edad,
+    };
 
-  mascotas.push(nuevaMascota);
-  console.log(`Mascota registrada: ${nombre}, ${especie}, ${edad} años.`);
+    mascotas.push(nuevaMascota);
+    alert(`Mascota registrada: ${nombre}, ${especie}, ${edad} años.`);
+    console.log(`Mascota registrada: ${nombre}, ${especie}, ${edad} años.`);
+  } else {
+    alert("Registro cancelado."); // Si el usuario cancela
+    console.log("Registro de mascota cancelado.");
+  }
 }
 
 //Funcion para mostrar los servicios disponibles
@@ -54,14 +61,14 @@ function elegirServicio() {
 
   if (opcion >= 1 && opcion <= servicios.length) {
     let mascotaNombre = prompt("Ingrese el nombre de la mascota:");
-
+    // Verificamos que el array no esté vacío antes de buscar
     if (mascotas.length === 0) {
       console.log(
         "No hay mascotas registradas. Registre una antes de elegir un servicio."
       );
       return;
     }
-
+    // Buscamos la mascota en el array, asegurando que mascotaNombre no sea null ni vacío
     if (mascotaNombre) {
       let mascota = mascotas.find(
         (m) =>
