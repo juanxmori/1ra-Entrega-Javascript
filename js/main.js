@@ -1,104 +1,104 @@
-//Tarea Principal: entradas de datos, procesamiento de datos y mostrar los resultado de salida de los mismos.
+// Inicializamos las mascotas vacías o las recuperamos del localStorage
+let mascotas = JSON.parse(localStorage.getItem("mascotas")) || [];
 
-// Array para almacenar mascotas registradas
-let mascotas = ["perro", "gato", "hamster", "tortuga", "conejo"];
+// Capturamos el formulario y los elementos para registrar las mascotas
+const formMascota = document.getElementById("formMascota");
+const nombreInput = document.getElementById("nombreMascota");
+const especieInput = document.getElementById("especieMascota");
+const edadInput = document.getElementById("edadMascota");
+const listaMascotas = document.getElementById("listaMascotas");
 
-// Array con los servicios ofrecidos
-const servicios = [
-  "clinica integral",
-  "internacion",
-  "laboratorio",
-  "cirugias",
-  "domicilios",
-  "plan sanitario",
-  "alimento",
-  "farmacia",
-];
+// Capturamos los elementos del formulario para asignar servicios
+const formServicio = document.getElementById("formServicio");
+const nombreBusqueda = document.getElementById("nombreBusqueda");
+const selectServicio = document.getElementById("selectServicio");
+const mensajeError = document.getElementById("mensajeError"); // Para mostrar mensaje de error
 
-// Función para registrar una mascota
-function registrarMascota() {
-  let nombre = prompt("Ingrese el nombre de la mascota:");
-  let especie = prompt("Ingrese la especie de la mascota (perro, gato, etc.):");
-  let edad = parseInt(prompt("Ingrese la edad de la mascota:"));
+// Mostrar las mascotas en la página
+function mostrarMascotas() {
+  listaMascotas.innerHTML = ""; // Limpiar antes de mostrar nuevas mascotas
+  mascotas.forEach((mascota) => {
+    const card = document.createElement("div");
+    card.className = "col-md-4";
 
-  let continuar = confirm("Seguro de registrar esta mascota?");
-  if (continuar) {
-    let nuevaMascota = {
-      nombre: nombre,
-      especie: especie,
-      edad: edad,
-    };
+    card.innerHTML = `
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">${mascota.nombre}</h5>
+          <p class="card-text">
+            Especie: ${mascota.especie}<br>
+            Edad: ${mascota.edad}<br>
+            Servicio: ${mascota.servicio ? mascota.servicio : "Ninguno"}
+          </p>
+        </div>
+      </div>
+    `;
+    listaMascotas.appendChild(card);
+  });
+}
 
-    mascotas.push(nuevaMascota);
-    alert(`Mascota registrada: ${nombre}, ${especie}, ${edad} años.`);
-    console.log(`Mascota registrada: ${nombre}, ${especie}, ${edad} años.`);
+// Evento para registrar mascotas
+formMascota.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const nombre = nombreInput.value.trim();
+  const especie = especieInput.value.trim();
+  const edad = parseInt(edadInput.value);
+
+  if (!nombre || !especie || !edad) {
+    alert("Por favor, completa todos los campos.");
+    return;
+  }
+
+  // Creamos la nueva mascota y la añadimos al array
+  const nuevaMascota = {
+    nombre: nombre,
+    especie: especie,
+    edad: edad,
+    servicio: null,
+  };
+
+  // Guardamos la mascota en el array y actualizamos el localStorage
+  mascotas.push(nuevaMascota);
+  localStorage.setItem("mascotas", JSON.stringify(mascotas));
+
+  // Mostramos las mascotas nuevamente
+  mostrarMascotas();
+
+  // Limpiamos el formulario
+  formMascota.reset();
+});
+
+// Evento para asignar servicio a una mascota
+formServicio.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const nombreMascotaBuscada = nombreBusqueda.value.trim().toLowerCase();
+  const servicioSeleccionado = selectServicio.value;
+
+  // Buscamos la mascota por nombre
+  const mascotaEncontrada = mascotas.find(
+    (mascota) => mascota.nombre.toLowerCase() === nombreMascotaBuscada
+  );
+
+  if (mascotaEncontrada) {
+    // Asignamos el servicio a la mascota
+    mascotaEncontrada.servicio = servicioSeleccionado;
+
+    // Guardamos los cambios en localStorage
+    localStorage.setItem("mascotas", JSON.stringify(mascotas));
+
+    // Mostramos las mascotas nuevamente
+    mostrarMascotas();
+
+    // Limpiamos el formulario
+    formServicio.reset();
+    mensajeError.innerHTML = ""; // Limpiamos mensaje de error
   } else {
-    alert("Registro cancelado."); // Si el usuario cancela
-    console.log("Registro de mascota cancelado.");
+    // Mostramos el mensaje de error en el DOM
+    mensajeError.innerHTML = `<div class="alert alert-danger" role="alert">Mascota no encontrada. Verifica el nombre.</div>`;
   }
-}
+});
 
-//Funcion para mostrar los servicios disponibles
-function mostrarServicios() {
-  console.log("Servicios Disponibles:");
-  for (let i = 0; i < servicios.length; i++) {
-    console.log(`${i + 1}. ${servicios[i]}`);
-  }
-}
-
-//Funcion para calcular si aplica a un descuento
-function calcularDescuento(edad) {
-  if (edad < 2 || edad > 10) {
-    return 10; //10% de descuento
-  }
-  return 0; //Sin descuento
-}
-
-// Función para elegir un servicio
-function elegirServicio() {
-  mostrarServicios();
-  let opcion = parseInt(prompt("Ingrese el número del servicio que desea:"));
-
-  if (opcion >= 1 && opcion <= servicios.length) {
-    let mascotaNombre = prompt("Ingrese el nombre de la mascota:");
-    // Verificamos que el array no esté vacío antes de buscar
-    if (mascotas.length === 0) {
-      console.log(
-        "No hay mascotas registradas. Registre una antes de elegir un servicio."
-      );
-      return;
-    }
-    // Buscamos la mascota en el array, asegurando que mascotaNombre no sea null ni vacío
-    if (mascotaNombre) {
-      let mascota = mascotas.find(
-        (m) =>
-          m.nombre && m.nombre.toLowerCase() === mascotaNombre.toLowerCase()
-      );
-
-      if (mascota) {
-        let descuento = calcularDescuento(mascota.edad);
-        console.log(
-          `Has elegido el servicio de ${servicios[opcion - 1]} para ${
-            mascota.nombre
-          }.`
-        );
-        if (descuento > 0) {
-          console.log(
-            `¡Se aplica un descuento del ${descuento}% por la edad de la mascota!`
-          );
-        }
-      } else {
-        console.log(
-          "Mascota no encontrada. Registrala antes de elegir un servicio."
-        );
-      }
-    } else {
-      console.log("Debe ingresar un nombre válido.");
-    }
-  } else {
-    console.log("Opción no válida.");
-  }
-}
-
-registrarMascota();
-elegirServicio();
+// Llamamos a mostrarMascotas para cargar las que ya estaban guardadas
+mostrarMascotas();
